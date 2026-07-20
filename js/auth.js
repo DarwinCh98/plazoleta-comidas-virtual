@@ -78,6 +78,41 @@ function upsertBusinessCatalogEntry(entry) {
   return entries;
 }
 
+function removeBusinessCatalogEntry(identifier) {
+  const entries = getBusinessCatalogEntries();
+  const filtered = entries.filter(item => item.id !== identifier && item.nombre !== identifier);
+  saveBusinessCatalogEntries(filtered);
+}
+
+function removeCustomMenu(negocioNombre) {
+  const customs = getCustomMenus();
+  if (customs[negocioNombre]) {
+    delete customs[negocioNombre];
+    localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(customs));
+  }
+}
+
+function removeBusinessMenu(identifiers) {
+  const customs = getCustomMenus();
+  identifiers.forEach(name => {
+    if (name && customs[name]) {
+      delete customs[name];
+    }
+  });
+  localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(customs));
+}
+
+function deleteProfile() {
+  const perfil = getPerfil();
+  const rol = getRol();
+  if (rol === 'emprendimiento' && perfil) {
+    removeBusinessCatalogEntry(perfil.id);
+    removeBusinessCatalogEntry(perfil.nombre);
+    removeBusinessMenu([perfil.id, perfil.nombre]);
+  }
+  clearAuth();
+}
+
 function syncAuthFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get('authdata');

@@ -130,6 +130,7 @@ function renderDashboard() {
           <div class="dashboard-actions">
             <a href="${withAuthParam('../index.html')}" class="btn btn--outline">Volver al inicio</a>
             <a href="${withAuthParam('catalogo.html')}" class="btn btn--secondary">Explorar catálogo</a>
+            <button type="button" class="btn btn--danger" id="btn-eliminar-perfil-cliente">Eliminar perfil</button>
           </div>
         </section>
       </div>
@@ -147,6 +148,13 @@ function renderDashboard() {
       });
       showToast('Perfil actualizado.');
       renderDashboard();
+    });
+
+    document.getElementById('btn-eliminar-perfil-cliente')?.addEventListener('click', () => {
+      if (confirm('¿Estás seguro? Se eliminará tu perfil y cerrarás sesión.')) {
+        deleteProfile();
+        window.location.href = '../index.html';
+      }
     });
     return;
   }
@@ -208,6 +216,7 @@ function renderDashboard() {
         <div class="dashboard-actions">
           <a href="${withAuthParam('../index.html')}" class="btn btn--outline">Ver página principal</a>
           <a href="${withAuthParam('catalogo.html')}" class="btn btn--secondary">Ver catálogo</a>
+          <button type="button" class="btn btn--danger" id="btn-eliminar-perfil-negocio">Eliminar perfil</button>
         </div>
       </section>
 
@@ -268,6 +277,13 @@ function renderDashboard() {
     });
     showToast('Perfil del negocio actualizado.');
     renderDashboard();
+  });
+
+  document.getElementById('btn-eliminar-perfil-negocio')?.addEventListener('click', () => {
+    if (confirm('¿Estás seguro? Se eliminará tu perfil del emprendimiento y cerrarás sesión.')) {
+      deleteProfile();
+      window.location.href = '../index.html';
+    }
   });
 
   document.getElementById('form-agregar-plato')?.addEventListener('submit', e => {
