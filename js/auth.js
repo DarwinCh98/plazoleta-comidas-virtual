@@ -78,25 +78,36 @@ function upsertBusinessCatalogEntry(entry) {
   return entries;
 }
 
+function normalizeIdentifier(value) {
+  return String(value || '').toLowerCase().trim();
+}
+
 function removeBusinessCatalogEntry(identifier) {
+  const target = normalizeIdentifier(identifier);
   const entries = getBusinessCatalogEntries();
-  const filtered = entries.filter(item => item.id !== identifier && item.nombre !== identifier);
+  const filtered = entries.filter(item => {
+    return normalizeIdentifier(item.id) !== target && normalizeIdentifier(item.nombre) !== target;
+  });
   saveBusinessCatalogEntries(filtered);
 }
 
 function removeCustomMenu(negocioNombre) {
   const customs = getCustomMenus();
-  if (customs[negocioNombre]) {
-    delete customs[negocioNombre];
-    localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(customs));
-  }
+  const target = normalizeIdentifier(negocioNombre);
+  Object.keys(customs).forEach(key => {
+    if (normalizeIdentifier(key) === target) {
+      delete customs[key];
+    }
+  });
+  localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(customs));
 }
 
 function removeBusinessMenu(identifiers) {
   const customs = getCustomMenus();
-  identifiers.forEach(name => {
-    if (name && customs[name]) {
-      delete customs[name];
+  const targets = new Set(identifiers.filter(Boolean).map(normalizeIdentifier));
+  Object.keys(customs).forEach(key => {
+    if (targets.has(normalizeIdentifier(key))) {
+      delete customs[key];
     }
   });
   localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(customs));
@@ -107,9 +118,8 @@ function deleteProfile() {
   const rol = getRol();
   if (rol === 'emprendimiento' && perfil) {
     removeBusinessCatalogEntry(perfil.id);
-    if (perfil.negocio) {
-      removeBusinessCatalogEntry(perfil.negocio);
-    }
+    removeBusinessCatalogEntry(perfil.negocio);
+    removeBusinessCatalogEntry(perfil.nombre);
     removeBusinessMenu([perfil.id, perfil.negocio, perfil.nombre]);
   }
   clearAuth();
