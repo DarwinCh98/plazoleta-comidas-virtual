@@ -338,20 +338,30 @@ function clearAuth() {
 }
 
 function isLoggedIn() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('auth') === '1' || params.get('authdata')) return true;
-
   const auth = readAuthFromStorage();
   if (auth && auth.loggedIn) return true;
 
   try {
-    return sessionStorage.getItem('pcv_logged_in') === 'true';
+    if (sessionStorage.getItem('pcv_logged_in') === 'true') return true;
   } catch (e) {
-    return false;
+    /* ignorar */
   }
+
+  const params = new URLSearchParams(window.location.search);
+  return params.get('auth') === '1' || Boolean(params.get('authdata'));
 }
 
 function getRol() {
+  const auth = readAuthFromStorage();
+  if (auth && auth.rol) return auth.rol;
+
+  try {
+    const sessionRol = sessionStorage.getItem('pcv_rol');
+    if (sessionRol === 'emprendimiento' || sessionRol === 'cliente') return sessionRol;
+  } catch (e) {
+    /* ignorar */
+  }
+
   const params = new URLSearchParams(window.location.search);
   const rolUrl = params.get('rol');
   if (rolUrl === 'emprendimiento' || rolUrl === 'cliente') return rolUrl;
@@ -359,10 +369,27 @@ function getRol() {
   const snapshot = decodeAuthData(params.get('authdata') || '');
   if (snapshot && snapshot.rol) return snapshot.rol;
 
-  const auth = readAuthFromStorage();
-  if (auth && auth.rol) return auth.rol;
+  return 'cliente';
+}
 
-  return sessionStorage.getItem('pcv_rol') || 'cliente';
+function clearAuth() {
+  try {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    sessionStorage.removeItem('pcv_logged_in');
+    sessionStorage.removeItem('pcv_rol');
+  } catch (e) {
+    /* ignorar */
+  }
+
+  if (typeof window !== 'undefined' && window.history && window.location) {
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('auth') || url.searchParams.has('authdata') || url.searchParams.has('rol')) {
+      url.searchParams.delete('auth');
+      url.searchParams.delete('authdata');
+      url.searchParams.delete('rol');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }
 }
 
 function withAuthParam(url) {
