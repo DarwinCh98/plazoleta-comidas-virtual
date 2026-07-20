@@ -1,0 +1,239 @@
+/* =============================================
+   Componentes — Tarjetas, sidebar, estrellas
+   ============================================= */
+
+/* ========== EMPRENDIMIENTOS GRID ========== */
+.emprendimientos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ========== TARJETA DE NEGOCIO ========== */
+.card-negocio {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-text);
+  border-radius: var(--radius-md);
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.card-negocio:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+}
+
+.card-negocio__btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.card-negocio__btn {
+  flex: 1 1 110px;
+  min-width: 110px;
+}
+
+.card-negocio__top {
+  position: relative;
+  border-radius: calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px) 0 0;
+  overflow: visible;
+}
+
+.card-negocio__image-wrap {
+  position: relative;
+  height: 130px;
+  overflow: hidden;
+  border-radius: calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px) 0 0;
+  background: linear-gradient(145deg, #e8e4d4, #d4cfc0);
+}
+
+.card-negocio__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-negocio__logo-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  z-index: 5;
+}
+
+.card-negocio__logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 3px solid var(--color-white);
+  object-fit: contain;
+  background: var(--color-white);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+  padding: 4px;
+}
+
+.card-negocio__body {
+  position: relative;
+  z-index: 2;
+  padding: 2.75rem 1rem 1.25rem;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  border-radius: 0 0 calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px);
+}
+
+.card-negocio__stars {
+  color: #f5a623;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin-bottom: 0.35rem;
+}
+
+.card-negocio__name {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.card-negocio__desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+  flex: 1;
+  margin-bottom: 0.85rem;
+}
+
+.card-negocio__btn {
+  align-self: center;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sidebar__block {
+  background: var(--color-white);
+  border: 1.5px solid var(--color-text);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar__title {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar__note {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ========== PROMOCIONES GRID ========== */
+.promociones-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.promo-card {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(145deg, var(--color-green-light), #d4e8c2);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.promo-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.promo-card--flyer {
+  background: var(--color-bg-light);
+}
+
+.promo-card--flyer img {
+  object-fit: contain;
+  padding: 0.15rem;
+}
+
+.promo-card span {
+  position: relative;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--color-white);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.25rem 0.4rem;
+  width: 100%;
+  text-align: center;
+}
+
+.promo-card--placeholder:not(:has(img)) span,
+.promo-card--placeholder:has(img[style*="display: none"]) span {
+  background: var(--color-green);
+}
+
+/* ========== ALIADOS ========== */
+.aliados-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.aliado-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--color-green);
+  overflow: hidden;
+  background: var(--color-green-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aliado-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+  background: var(--color-white);
+}
+
+.aliado-avatar:not(:has(img))::after,
+.aliado-avatar:has(img[style*="display: none"])::after {
+  content: '🏪';
+  font-size: 1.25rem;
+}

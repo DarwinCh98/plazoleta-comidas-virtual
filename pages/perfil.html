@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del emprendimiento | Plazoleta de Comidas Virtual</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner container">
+      <a href="../index.html" class="header__brand">
+        <img src="../img/logo-principal.png" alt="Logo Sabores Ocañeros" class="header__logo">
+        <div class="header__titles">
+          <span class="header__title">Plazoleta de Comidas Virtual</span>
+          <span class="header__subtitle">Sabores Ocañeros · Gastronomía Tradicional</span>
+        </div>
+      </a>
+      <nav class="header__nav">
+        <a href="../index.html" class="nav-link">INICIO</a>
+        <a href="catalogo.html" class="nav-link">CATÁLOGO</a>
+      </nav>
+      <div class="header__actions">
+        <button type="button" class="btn btn--primary" onclick="location.href='../index.html'">INICIAR SESIÓN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-page">
+    <div class="container" id="profile-content">
+      <p class="dashboard-sub">Cargando perfil...</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p><strong>Plazoleta de Comidas Virtual</strong> · Sabores Ocañeros</p>
+    </div>
+  </footer>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/data.js"></script>
+  <script src="../js/perfil.js"></script>
+</body>
+</html>
