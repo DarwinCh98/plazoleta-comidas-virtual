@@ -135,13 +135,14 @@ function renderDashboard() {
     document.getElementById('form-editar-perfil-cliente')?.addEventListener('submit', e => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(e.target).entries());
-      setLoggedIn('cliente', {
+      const updated = {
         ...perfil,
         nombre: data.nombre,
         email: data.email,
         telefono: data.telefono,
         direccion: data.direccion
-      });
+      };
+      setLoggedIn('cliente', updated);
       showToast('Perfil actualizado.');
       renderDashboard();
     });
@@ -258,7 +259,7 @@ function renderDashboard() {
     const logo = await readFileToDataUrl(logoInput?.files?.[0]);
     const cover = await readFileToDataUrl(coverInput?.files?.[0]);
 
-    setLoggedIn('emprendimiento', {
+    const updated = {
       ...perfil,
       nombre: data.representante,
       negocio: data.negocio,
@@ -270,7 +271,9 @@ function renderDashboard() {
       logo: logo || perfil.logo || '',
       imagen: cover || perfil.imagen || perfil.cover || '',
       cover: cover || perfil.cover || perfil.imagen || ''
-    });
+    };
+
+    setLoggedIn('emprendimiento', updated);
     showToast('Perfil del negocio actualizado.');
     renderDashboard();
   });

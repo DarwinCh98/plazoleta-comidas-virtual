@@ -84,6 +84,47 @@ function findAccountByEmail(role, email) {
   return (accounts[role] || []).find(acc => normalizeIdentifier(acc.email) === normalizeIdentifier(email));
 }
 
+function getStoredAccount(role, profile) {
+  const accounts = getStoredAccounts();
+  return (accounts[role] || []).find(acc => {
+    return (profile.id && normalizeIdentifier(acc.id) === normalizeIdentifier(profile.id))
+      || (profile.email && normalizeIdentifier(acc.email) === normalizeIdentifier(profile.email))
+      || (role === 'emprendimiento' && profile.negocio && normalizeIdentifier(acc.negocio) === normalizeIdentifier(profile.negocio));
+  });
+}
+
+function upsertStoredAccount(role, profile) {
+  const accounts = getStoredAccounts();
+  if (!accounts[role]) accounts[role] = [];
+
+  const existing = getStoredAccount(role, profile);
+  const updated = {
+    ...existing,
+    ...profile,
+    role,
+    id: profile.id || (existing && existing.id) || slugify(profile.negocio || profile.nombre || profile.email || 'perfil')
+  };
+
+  if (existing && existing.password && !updated.password) {
+    updated.password = existing.password;
+  }
+
+  if (existing) {
+    accounts[role] = accounts[role].map(acc => {
+      if ((profile.id && normalizeIdentifier(acc.id) === normalizeIdentifier(existing.id))
+        || (profile.email && normalizeIdentifier(acc.email) === normalizeIdentifier(existing.email))
+        || (role === 'emprendimiento' && profile.negocio && normalizeIdentifier(acc.negocio) === normalizeIdentifier(profile.negocio))) {
+        return updated;
+      }
+      return acc;
+    });
+  } else {
+    accounts[role].push(updated);
+  }
+
+  saveStoredAccounts(accounts);
+}
+
 function registerAccount(role, data) {
   const accounts = getStoredAccounts();
   if (findAccountByEmail(role, data.email)) {
@@ -117,8 +158,7 @@ function registerAccount(role, data) {
     password: data.password || ''
   };
 
-  accounts[role] = [...(accounts[role] || []), account];
-  saveStoredAccounts(accounts);
+  upsertStoredAccount(role, account);
   return { success: true, account };
 }
 
@@ -143,7 +183,9 @@ function removeStoredAccount(perfil) {
 
   const target = normalizeIdentifier(perfil.email || perfil.id || perfil.negocio || perfil.nombre);
   accounts[role] = accounts[role].filter(acc => {
-    return normalizeIdentifier(acc.email) !== target && normalizeIdentifier(acc.id) !== target;
+    return normalizeIdentifier(acc.email) !== target
+      && normalizeIdentifier(acc.id) !== target
+      && normalizeIdentifier(acc.negocio || '') !== target;
   });
   saveStoredAccounts(accounts);
 }
@@ -166,10 +208,6 @@ function upsertBusinessCatalogEntry(entry) {
   }
   saveBusinessCatalogEntries(entries);
   return entries;
-}
-
-function normalizeIdentifier(value) {
-  return String(value || '').toLowerCase().trim();
 }
 
 function removeBusinessCatalogEntry(identifier) {
@@ -293,6 +331,8 @@ function setLoggedIn(rol = 'cliente', perfil = {}) {
     cover: perfil.cover || perfil.imagen || '',
     rating: perfil.rating || 5
   };
+
+  upsertStoredAccount(rol, auth);
   writeAuthToStorage(auth);
 
   if (rol === 'emprendimiento') {
@@ -356,16 +396,6 @@ function getPerfil() {
   }
 
   return null;
-}
-
-function clearAuth() {
-  try {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
-    sessionStorage.removeItem('pcv_logged_in');
-    sessionStorage.removeItem('pcv_rol');
-  } catch (e) {
-    /* ignorar */
-  }
 }
 
 function isLoggedIn() {
