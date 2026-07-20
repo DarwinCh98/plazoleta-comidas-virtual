@@ -206,10 +206,13 @@ function initForms() {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
     const rol = data.rol === 'emprendimiento' ? 'emprendimiento' : 'cliente';
-    setLoggedIn(rol, {
-      email: data.email,
-      negocio: rol === 'emprendimiento' ? (data.email.split('@')[0] || 'Mi negocio') : ''
-    });
+    const result = loginAccount(rol, data.email, data.password);
+    if (!result.success) {
+      showToast(result.message);
+      return;
+    }
+    const account = result.account;
+    setLoggedIn(rol, account);
     closeAllModals();
 
     if (rol === 'emprendimiento') {
@@ -233,12 +236,18 @@ function initForms() {
   document.getElementById('form-registro-cliente')?.addEventListener('submit', e => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    setLoggedIn('cliente', {
+    const result = registerAccount('cliente', {
       nombre: data.nombre,
       email: data.email,
       telefono: data.telefono,
-      direccion: data.direccion
+      direccion: data.direccion,
+      password: data.password
     });
+    if (!result.success) {
+      showToast(result.message);
+      return;
+    }
+    setLoggedIn('cliente', result.account);
     closeAllModals();
     updateHeaderSession(true);
     showToast('¡Cuenta creada! Teléfono y dirección listos para domicilio.');
@@ -250,14 +259,20 @@ function initForms() {
   document.getElementById('form-registro-emprendimiento')?.addEventListener('submit', e => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target).entries());
-    setLoggedIn('emprendimiento', {
+    const result = registerAccount('emprendimiento', {
       nombre: data.representante,
       negocio: data.negocio,
       email: data.email,
       telefono: data.telefono,
       direccion: data.direccion,
-      categoria: data.categoria
+      categoria: data.categoria,
+      password: data.password
     });
+    if (!result.success) {
+      showToast(result.message);
+      return;
+    }
+    setLoggedIn('emprendimiento', result.account);
     closeAllModals();
     showToast('¡Emprendimiento registrado! Abriendo tu panel...');
     setTimeout(() => {

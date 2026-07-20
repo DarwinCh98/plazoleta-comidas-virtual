@@ -7,6 +7,7 @@
 const AUTH_STORAGE_KEY = 'pcv_auth';
 const MENUS_STORAGE_KEY = 'pcv_menu_custom';
 const BUSINESS_CATALOG_STORAGE_KEY = 'pcv_business_catalog';
+const ACCOUNTS_STORAGE_KEY = 'pcv_accounts';
 
 function encodeAuthData(data) {
   return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
@@ -56,6 +57,95 @@ function getBusinessCatalogEntries() {
   } catch (e) {
     return [];
   }
+}
+
+function getStoredAccounts() {
+  try {
+    return JSON.parse(localStorage.getItem(ACCOUNTS_STORAGE_KEY) || '{"cliente":[],"emprendimiento":[]}');
+  } catch (e) {
+    return { cliente: [], emprendimiento: [] };
+  }
+}
+
+function saveStoredAccounts(accounts) {
+  try {
+    localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
+  } catch (e) {
+    /* ignorar */
+  }
+}
+
+function normalizeIdentifier(value) {
+  return String(value || '').toLowerCase().trim();
+}
+
+function findAccountByEmail(role, email) {
+  const accounts = getStoredAccounts();
+  return (accounts[role] || []).find(acc => normalizeIdentifier(acc.email) === normalizeIdentifier(email));
+}
+
+function registerAccount(role, data) {
+  const accounts = getStoredAccounts();
+  if (findAccountByEmail(role, data.email)) {
+    return { success: false, message: 'Ya existe una cuenta con ese correo.' };
+  }
+
+  if (role === 'emprendimiento') {
+    const businessExists = (accounts.emprendimiento || []).some(acc => normalizeIdentifier(acc.negocio) === normalizeIdentifier(data.negocio));
+    if (businessExists) {
+      return { success: false, message: 'Ya existe un emprendimiento con ese nombre.' };
+    }
+  }
+
+  const id = role === 'emprendimiento'
+    ? slugify(data.negocio || data.nombre || data.email || 'perfil')
+    : slugify(data.email || data.nombre || 'cliente');
+
+  const account = {
+    role,
+    id,
+    nombre: data.nombre || data.representante || '',
+    negocio: data.negocio || '',
+    email: data.email || '',
+    telefono: data.telefono || '',
+    direccion: data.direccion || '',
+    categoria: data.categoria || '',
+    descripcion: data.descripcion || '',
+    logo: data.logo || '',
+    imagen: data.imagen || data.cover || '',
+    cover: data.cover || data.imagen || '',
+    password: data.password || ''
+  };
+
+  accounts[role] = [...(accounts[role] || []), account];
+  saveStoredAccounts(accounts);
+  return { success: true, account };
+}
+
+function loginAccount(role, email, password) {
+  const account = findAccountByEmail(role, email);
+  if (!account) {
+    return { success: false, message: 'No se encontró una cuenta registrada con ese correo.' };
+  }
+
+  if (account.password !== password) {
+    return { success: false, message: 'Contraseña incorrecta.' };
+  }
+
+  return { success: true, account };
+}
+
+function removeStoredAccount(perfil) {
+  if (!perfil) return;
+  const role = perfil.rol || getRol();
+  const accounts = getStoredAccounts();
+  if (!accounts[role]) return;
+
+  const target = normalizeIdentifier(perfil.email || perfil.id || perfil.negocio || perfil.nombre);
+  accounts[role] = accounts[role].filter(acc => {
+    return normalizeIdentifier(acc.email) !== target && normalizeIdentifier(acc.id) !== target;
+  });
+  saveStoredAccounts(accounts);
 }
 
 function saveBusinessCatalogEntries(entries) {
@@ -122,6 +212,7 @@ function deleteProfile() {
     removeBusinessCatalogEntry(perfil.nombre);
     removeBusinessMenu([perfil.id, perfil.negocio, perfil.nombre]);
   }
+  removeStoredAccount(perfil);
   clearAuth();
 }
 
