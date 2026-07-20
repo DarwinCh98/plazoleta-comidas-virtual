@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     headerBadge.textContent = rol === 'emprendimiento' ? 'Emprendimiento' : 'Sesión activa';
   }
 
+  renderDashboard();
+});
+
 function saveCustomMenus(data) {
   localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(data));
 }
