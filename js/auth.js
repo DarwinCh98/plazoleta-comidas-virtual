@@ -249,6 +249,14 @@ function syncAuthFromUrl() {
       /* ignorar */
     }
   }
+
+  if (typeof window !== 'undefined' && window.history && window.location) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('auth');
+    url.searchParams.delete('rol');
+    url.searchParams.delete('authdata');
+    window.history.replaceState({}, '', url.toString());
+  }
 }
 
 syncAuthFromUrl();
@@ -309,22 +317,45 @@ function setLoggedIn(rol = 'cliente', perfil = {}) {
 
 function getPerfil() {
   const auth = readAuthFromStorage();
-  if (!auth || !auth.loggedIn) return null;
-  return {
-    id: auth.id || slugify(auth.negocio || auth.nombre || 'mi-perfil'),
-    nombre: auth.nombre || '',
-    negocio: auth.negocio || '',
-    email: auth.email || '',
-    telefono: auth.telefono || '',
-    direccion: auth.direccion || '',
-    categoria: auth.categoria || '',
-    descripcion: auth.descripcion || '',
-    logo: auth.logo || '',
-    imagen: auth.imagen || auth.cover || '',
-    cover: auth.cover || auth.imagen || '',
-    rating: auth.rating || 5,
-    rol: auth.rol || 'cliente'
-  };
+  if (auth && auth.loggedIn) {
+    return {
+      id: auth.id || slugify(auth.negocio || auth.nombre || 'mi-perfil'),
+      nombre: auth.nombre || '',
+      negocio: auth.negocio || '',
+      email: auth.email || '',
+      telefono: auth.telefono || '',
+      direccion: auth.direccion || '',
+      categoria: auth.categoria || '',
+      descripcion: auth.descripcion || '',
+      logo: auth.logo || '',
+      imagen: auth.imagen || auth.cover || '',
+      cover: auth.cover || auth.imagen || '',
+      rating: auth.rating || 5,
+      rol: auth.rol || 'cliente'
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const snapshot = decodeAuthData(params.get('authdata') || '');
+  if (snapshot && snapshot.loggedIn) {
+    return {
+      id: snapshot.id || slugify(snapshot.negocio || snapshot.nombre || 'mi-perfil'),
+      nombre: snapshot.nombre || '',
+      negocio: snapshot.negocio || '',
+      email: snapshot.email || '',
+      telefono: snapshot.telefono || '',
+      direccion: snapshot.direccion || '',
+      categoria: snapshot.categoria || '',
+      descripcion: snapshot.descripcion || '',
+      logo: snapshot.logo || '',
+      imagen: snapshot.imagen || snapshot.cover || '',
+      cover: snapshot.cover || snapshot.imagen || '',
+      rating: snapshot.rating || 5,
+      rol: snapshot.rol || 'cliente'
+    };
+  }
+
+  return null;
 }
 
 function clearAuth() {

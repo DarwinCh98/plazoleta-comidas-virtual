@@ -277,8 +277,8 @@ function initForms() {
     showToast('¡Emprendimiento registrado! Abriendo tu panel...');
     setTimeout(() => {
       const dash = window.location.pathname.includes('/pages/')
-        ? withAuthParam('dashboard.html')
-        : withAuthParam('pages/dashboard.html');
+        ? 'dashboard.html'
+        : 'pages/dashboard.html';
       window.location.href = dash;
     }, 700);
   });
@@ -286,7 +286,7 @@ function initForms() {
 
 function getDashboardUrl() {
   const inPages = window.location.pathname.includes('/pages/');
-  return withAuthParam(inPages ? 'dashboard.html' : 'pages/dashboard.html');
+  return inPages ? 'dashboard.html' : 'pages/dashboard.html';
 }
 
 function updateHeaderSession(force = false) {
