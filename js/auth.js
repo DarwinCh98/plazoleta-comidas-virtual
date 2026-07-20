@@ -107,8 +107,10 @@ function deleteProfile() {
   const rol = getRol();
   if (rol === 'emprendimiento' && perfil) {
     removeBusinessCatalogEntry(perfil.id);
-    removeBusinessCatalogEntry(perfil.nombre);
-    removeBusinessMenu([perfil.id, perfil.nombre]);
+    if (perfil.negocio) {
+      removeBusinessCatalogEntry(perfil.negocio);
+    }
+    removeBusinessMenu([perfil.id, perfil.negocio, perfil.nombre]);
   }
   clearAuth();
 }
