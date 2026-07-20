@@ -19,21 +19,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  document.getElementById('btn-cerrar-sesion')?.addEventListener('click', () => {
-    clearAuth();
-    window.location.href = '../index.html';
-  });
-
-  renderDashboard();
-});
-
-function getCustomMenus() {
-  try {
-    return JSON.parse(localStorage.getItem(MENUS_STORAGE_KEY) || '{}');
-  } catch (e) {
-    return {};
+  const dashboardLink = document.getElementById('dashboard-link');
+  const headerBadge = document.getElementById('header-badge');
+  if (dashboardLink) {
+    dashboardLink.textContent = rol === 'emprendimiento' ? 'MI PANEL' : 'MI PERFIL';
   }
-}
+  if (headerBadge) {
+    headerBadge.textContent = rol === 'emprendimiento' ? 'Emprendimiento' : 'Sesión activa';
+  }
 
 function saveCustomMenus(data) {
   localStorage.setItem(MENUS_STORAGE_KEY, JSON.stringify(data));
